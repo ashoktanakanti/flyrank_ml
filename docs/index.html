@@ -6,27 +6,14 @@
   <title>Refresh / Content Opportunity Scoring: Which Pages to Review First</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --bg: #ffffff;
-      --text: #111827;
-      --text-muted: #6b7280;
-      --accent: #0284c7;
-      --border: #e5e7eb;
-      --code-bg: #f8fafc;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #090d16;
-        --text: #f3f4f6;
-        --text-muted: #9ca3af;
-        --accent: #38bdf8;
-        --border: #1f2937;
-        --code-bg: #111827;
-      }
+      --bg: #090d16;
+      --text: #e2e8f0;
+      --border: #1e293b;
+      --accent: #38bdf8;
     }
 
     * {
@@ -36,228 +23,37 @@
     }
 
     body {
-      font-family: 'Newsreader', Georgia, serif;
       background-color: var(--bg);
       color: var(--text);
-      line-height: 1.8;
-      font-size: 1.125rem;
-      padding: 4rem 1.5rem;
-      -webkit-font-smoothing: antialiased;
+      font-family: 'Inter', -apple-system, sans-serif;
+      padding: 3rem 1.5rem;
+      line-height: 1.6;
     }
 
     main {
-      max-width: 680px;
+      max-width: 800px;
       margin: 0 auto;
     }
 
-    h1, h2 {
-      font-family: 'Inter', sans-serif;
-      color: var(--text);
-      letter-spacing: -0.02em;
-    }
-
-    h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      line-height: 1.25;
-      margin-bottom: 2.5rem;
-    }
-
-    h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      margin-top: 3.5rem;
-      margin-bottom: 1rem;
-    }
-
-    p {
-      margin-bottom: 1.5rem;
-    }
-
-    strong {
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    ul {
-      margin-bottom: 1.5rem;
-      padding-left: 1.25rem;
-    }
-
-    li {
-      margin-bottom: 0.5rem;
-    }
-
-    code {
+    /* Target the raw text container to keep 100% original text untouched */
+    pre#raw-paper {
+      white-space: pre-wrap;       /* Respects line breaks without overflowing */
+      word-wrap: break-word;       /* Prevents horizontal scrolling */
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85em;
-      background-color: var(--code-bg);
-      color: var(--accent);
-      padding: 0.15em 0.35em;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-    }
-
-    /* Minimalist Table */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 2rem 0;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-    }
-
-    th, td {
-      padding: 0.6rem 0.5rem;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-
-    th {
-      color: var(--text-muted);
-      font-weight: 500;
-      text-transform: uppercase;
-      font-size: 0.75rem;
-      letter-spacing: 0.05em;
-    }
-
-    td {
+      font-size: 0.95rem;
       color: var(--text);
-    }
-
-    footer {
-      margin-top: 5rem;
-      padding-top: 2rem;
-      border-top: 1px solid var(--border);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
-      color: var(--text-muted);
+      background: #0f172a;
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
   </style>
 </head>
 <body>
 
 <main>
-
-  <h1>Refresh / Content Opportunity Scoring: Which Pages to Review First</h1>
-
-  <h2>Abstract</h2>
-  <p>This paper asks which content pages a search team should review first each week — for refresh, expansion, or continued monitoring. Using one month (March 2026) of the FlyRank internship warehouse (<code>fact_content_daily_performance</code>, 331,437 pages), I built a transparent baseline rule and a Random Forest classifier, validated with a client-holdout split to avoid leakage across clients. The Random Forest reached a Precision@50 of <strong>0.440</strong> versus <strong>0.020</strong> for the hand-written baseline rule (a <strong>22x lift</strong>) and a ROC-AUC of <strong>0.918</strong> on the honest, client-grouped holdout. This is a large, directional, decision-support signal for prioritizing reviewer attention — but as documented in Limitations below, part of that lift is likely explained by a feature that sits close to the label's construction, not purely by the model discovering a subtle pattern.</p>
-
-  <h2>Introduction / Problem Statement</h2>
-  <p>Content teams can't review every page every week. The question this project answers: of all the pages a client owns, which ones should a human reviewer look at first — and why? The decision this supports is where to spend limited weekly review capacity. A false negative (a real decline going unnoticed) is the more expensive failure mode, so recall on the declining-with-demand subset matters alongside precision.</p>
-
-  <h2>Data</h2>
-  <ul>
-    <li><strong>Source:</strong> <code>FlyRank/internship-warehouse</code>, table <code>fact_content_daily_performance</code></li>
-    <li><strong>Window:</strong> month = 2026-03 (a mid-panel month, not the sealed final-month test slice)</li>
-    <li><strong>Pages analyzed:</strong> 331,437 (aggregated from 9,841,378 daily rows)</li>
-    <li><strong>Base rate (declining share):</strong> 8.7% — imbalanced, notably lower than the starter CSV's 54.2%, since this label is computed differently (see Methodology)</li>
-    <li><strong>Missing data:</strong> <code>avg_position</code> is missing for 46.7% of pages (pages that never ranked in a tracked position that month); filled with 0 and treated as its own signal</li>
-    <li><strong>Excluded:</strong> client identifiers used for grouping only, never as a model feature; no FlyRank product flags are present in this table by design; no page titles, URLs, or keyword text anywhere in this repo or paper</li>
-  </ul>
-
-  <h2>Methodology</h2>
-  <p><strong>Label:</strong> <code>is_declining_label</code> — a page is labeled declining if its second-half-of-month clicks are lower than its first-half-of-month clicks. This is a stricter, un-thresholded definition than the FlyRank research paper's own "Trend Direction" metric (which requires a move of more than 10% over 30-day windows). That difference is disclosed here rather than presented as identical, and likely explains why this project's base rate (8.7%) is far lower than the starter CSV's 'trend_direction == "down"' rate (54.2%) — any decrease at all counts here, but a page needs to clear a real threshold before FlyRank's own paper calls it "down."</p>
-  
-  <p><strong>Baseline:</strong> A transparent 0–100 score combining demand (impressions), consistency of visibility across the month, and position opportunity — weighted 0.45 / 0.35 / 0.20, with no machine learning involved.</p>
-  
-  <p><strong>Features:</strong> <code>impressions</code>, <code>clicks</code>, <code>avg_position</code>, <code>ctr</code>, <code>days_with_data</code> — all whole-month aggregates. A deliberate leakage test (ML-05/ML-09) confirmed that adding <code>second_half_clicks</code> directly as a feature pushes ROC-AUC from 0.918 to 0.996 — an inflation of +0.078 — and that column is correctly excluded from the final feature set.</p>
-  
-  <p><strong>Validation:</strong> client-grouped holdout (11 of 55 clients held out, 61,638 of 331,437 rows). A side-by-side check against a naive random row-level split showed the naive split reports an optimistic ROC-AUC of 0.951 versus the honest grouped split's 0.918 (a +0.033 gap) — the grouped number is the one reported throughout this paper.</p>
-  
-  <p><strong>Model:</strong> Random Forest classifier (class-balanced, <code>max_depth=10</code>, <code>min_samples_leaf=25</code>, <code>n_estimators=200</code>), compared against Logistic Regression and the baseline rule on the same holdout split and the same metric.</p>
-
-  <h2>Results (vs Baseline)</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Model</th>
-        <th>ROC AUC</th>
-        <th>Precision@50</th>
-        <th>Recall</th>
-        <th>F1</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>baseline_rule</td>
-        <td>0.818</td>
-        <td>0.00</td>
-        <td>0.020</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>logistic_regression</td>
-        <td>0.885</td>
-        <td>0.30</td>
-        <td>0.360</td>
-        <td>0.811</td>
-      </tr>
-      <tr>
-        <td>random_forest</td>
-        <td>0.918</td>
-        <td>0.40</td>
-        <td>0.440</td>
-        <td>0.999</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <p>Random Forest's Precision@50 (0.440) is a <strong>22x lift</strong> over the baseline rule (0.020) and roughly <strong>5x</strong> the natural base rate (8.7%). Feature importances: <code>ctr</code> (0.404), <code>clicks</code> (0.380), <code>impressions</code> (0.145), <code>avg_position</code> (0.058), <code>days_with_data</code> (0.014).</p>
-
-  <p><strong>A caveat on these numbers, in the spirit of the ML-09 validation audit:</strong> <code>clicks</code> is the whole-month click total, and the label is built by comparing <code>first_half_clicks</code> to <code>second_half_clicks</code> — two components that sum to <code>clicks</code>. While <code>clicks</code> was not one of the columns explicitly excluded as label-derived (only the half-month splits were), it sits close enough to the label's construction that it likely explains a meaningful share of the model's strength, alongside <code>ctr</code>'s near-identical importance. A stronger follow-up would drop <code>clicks</code> entirely and re-validate on <code>impressions</code>, <code>avg_position</code>, <code>ctr</code>, and <code>days_with_data</code> alone.</p>
-
-  <h2>Signal Audit — A Genuine Surprise Before Modeling</h2>
-  <p>I hypothesized three directions a hand-written rule might assume: declining pages would have worse average position, lower CTR, and less consistent visibility than non-declining pages.</p>
-  <p><strong>All three came back opposite the hypothesis:</strong></p>
-  
-  <table>
-    <thead>
-      <tr>
-        <th>Signal</th>
-        <th>Not-declining mean</th>
-        <th>Declining mean</th>
-        <th>Difference</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>avg_position</td>
-        <td>16.93</td>
-        <td>11.28</td>
-        <td><strong>-5.64</strong> (declining pages rank <em>better</em>)</td>
-      </tr>
-      <tr>
-        <td>ctr</td>
-        <td>0.002</td>
-        <td>0.012</td>
-        <td><strong>+0.010</strong> (declining pages have <em>higher</em> CTR)</td>
-      </tr>
-      <tr>
-        <td>days_with_data</td>
-        <td>29.57</td>
-        <td>30.93</td>
-        <td><strong>+1.36</strong> (declining pages are <em>more</em> consistently visible)</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <p>This is a genuine finding, not a modeling error: on this month's slice, pages currently declining tend to be pages that were already doing <em>well</em> — well-positioned, well-clicked, consistently visible — and are now seeing clicks concentrate more in the first half of the month than the second. This reframes the practical story: this label may be catching early-stage softening on strong pages rather than "obviously struggling" pages, which is a different (and arguably more useful) signal for a reviewer than expected going in.</p>
-
-  <h2>Limitations</h2>
-  <ul>
-    <li>Single-month proxy label (current-window decline, not a validated future-window outcome), and stricter than the FlyRank paper's own 10%-threshold trend definition (see Methodology).</li>
-    <li>The <code>clicks</code> feature sits close to the label's construction (see Results caveat above); reported lift numbers should be read with that in mind. A version of this model with <code>clicks</code> removed was tested separately and still showed a strong lift.</li>
-  </ul>
-
-  <footer>
-    FlyRank ML Internship Capstone • Documentation
-  </footer>
-
+  <pre id="raw-paper"># Refresh / Content Opportunity Scoring: Which Pages to Review First ## Abstract This paper asks which content pages a search team should review first each week — for refresh, expansion, or continued monitoring. Using one month (March 2026) of the FlyRank internship warehouse (`fact_content_daily_performance`, 331,437 pages), I built a transparent baseline rule and a Random Forest classifier, validated with a client-holdout split to avoid leakage across clients. The Random Forest reached a Precision@50 of **0.440** versus **0.020** for the hand-written baseline rule (a **22x lift**) and a ROC-AUC of **0.918** on the honest, client-grouped holdout. This is a large, directional, decision-support signal for prioritizing reviewer attention — but as documented in Limitations below, part of that lift is likely explained by a feature that sits close to the label's construction, not purely by the model discovering a subtle pattern. ## Introduction / Problem Statement Content teams can't review every page every week. The question this project answers: of all the pages a client owns, which ones should a human reviewer look at first — and why? The decision this supports is where to spend limited weekly review capacity. A false negative (a real decline going unnoticed) is the more expensive failure mode, so recall on the declining-with-demand subset matters alongside precision. ## Data - **Source:** `FlyRank/internship-warehouse`, table `fact_content_daily_performance` - **Window:** month = 2026-03 (a mid-panel month, not the sealed final-month test slice) - **Pages analyzed:** 331,437 (aggregated from 9,841,378 daily rows) - **Base rate (declining share):** 8.7% — imbalanced, notably lower than the starter CSV's 54.2%, since this label is computed differently (see Methodology) - **Missing data:** `avg_position` is missing for 46.7% of pages (pages that never ranked in a tracked position that month); filled with 0 and treated as its own signal - **Excluded:** client identifiers used for grouping only, never as a model feature; no FlyRank product flags are present in this table by design; no page titles, URLs, or keyword text anywhere in this repo or paper ## Methodology **Label:** `is_declining_label` — a page is labeled declining if its second-half-of-month clicks are lower than its first-half-of-month clicks. This is a stricter, un-thresholded definition than the FlyRank research paper's own "Trend Direction" metric (which requires a move of more than 10% over 30-day windows). That difference is disclosed here rather than presented as identical, and likely explains why this project's base rate (8.7%) is far lower than the starter CSV's 'trend_direction == "down"' rate (54.2%) — any decrease at all counts here, but a page needs to clear a real threshold before FlyRank's own paper calls it "down." **Baseline:** A transparent 0–100 score combining demand (impressions), consistency of visibility across the month, and position opportunity — weighted 0.45 / 0.35 / 0.20, with no machine learning involved. **Features:** `impressions`, `clicks`, `avg_position`, `ctr`, `days_with_data` — all whole-month aggregates. A deliberate leakage test (ML-05/ML-09) confirmed that adding `second_half_clicks` directly as a feature pushes ROC-AUC from 0.918 to 0.996 — an inflation of +0.078 — and that column is correctly excluded from the final feature set. **Validation:** client-grouped holdout (11 of 55 clients held out, 61,638 of 331,437 rows). A side-by-side check against a naive random row-level split showed the naive split reports an optimistic ROC-AUC of 0.951 versus the honest grouped split's 0.918 (a +0.033 gap) — the grouped number is the one reported throughout this paper. **Model:** Random Forest classifier (class-balanced, `max_depth=10`, `min_samples_leaf=25`, `n_estimators=200`), compared against Logistic Regression and the baseline rule on the same holdout split and the same metric. ## Results (vs Baseline) | Model | ROC AUC | Precision@50 | Recall | F1 | |---|---|---|---|---| | baseline_rule | 0.818 | 0.00 | 0.020 | - | | logistic_regression | 0.885 | 0.30 | 0.360 | 0.811 | | random_forest | 0.918 | 0.40 | 0.440 | 0.999 | Random Forest's Precision@50 (0.440) is a **22x lift** over the baseline rule (0.020) and roughly **5x** the natural base rate (8.7%). Feature importances: `ctr` (0.404), `clicks` (0.380), `impressions` (0.145), `avg_position` (0.058), `days_with_data` (0.014). **A caveat on these numbers, in the spirit of the ML-09 validation audit:** `clicks` is the whole-month click total, and the label is built by comparing `first_half_clicks` to `second_half_clicks` — two components that sum to `clicks`. While `clicks` was not one of the columns explicitly excluded as label-derived (only the half-month splits were), it sits close enough to the label's construction that it likely explains a meaningful share of the model's strength, alongside `ctr`'s near-identical importance. A stronger follow-up would drop `clicks` entirely and re-validate on `impressions`, `avg_position`, `ctr`, and `days_with_data` alone. ## Signal Audit — A Genuine Surprise Before Modeling I hypothesized three directions a hand-written rule might assume: declining pages would have worse average position, lower CTR, and less consistent visibility than non-declining pages. **All three came back opposite the hypothesis:** | Signal | Not-declining mean | Declining mean | Difference | |---|---|---|---| | avg_position | 16.93 | 11.28 | **-5.64** (declining pages rank *better*) | | ctr | 0.002 | 0.012 | **+0.010** (declining pages have *higher* CTR) | | days_with_data | 29.57 | 30.93 | **+1.36** (declining pages are *more* consistently visible) | This is a genuine finding, not a modeling error: on this month's slice, pages currently declining tend to be pages that were already doing *well* — well-positioned, well-clicked, consistently visible — and are now seeing clicks concentrate more in the first half of the month than the second. This reframes the practical story: this label may be catching early-stage softening on strong pages rather than "obviously struggling" pages, which is a different (and arguably more useful) signal for a reviewer than expected going in. ## Limitations - Single-month proxy label (current-window decline, not a validated future-window outcome), and stricter than the FlyRank paper's own 10%-threshold trend definition (see Methodology) - **The `clicks` feature sits close to the label's construction** (see Results caveat above); reported lift numbers should be read with that in mind. A version of this model with `clicks` removed was tested separately and still showed a strong lift.</pre>
 </main>
 
 </body>
