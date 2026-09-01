@@ -4,64 +4,87 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Refresh / Content Opportunity Scoring: Which Pages to Review First</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent: #38bdf8;
-      --border: #334155;
-      --code-bg: #020617;
+      --bg: #ffffff;
+      --text: #111827;
+      --text-muted: #6b7280;
+      --accent: #0284c7;
+      --border: #e5e7eb;
+      --code-bg: #f8fafc;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #090d16;
+        --text: #f3f4f6;
+        --text-muted: #9ca3af;
+        --accent: #38bdf8;
+        --border: #1f2937;
+        --code-bg: #111827;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Newsreader', Georgia, serif;
       background-color: var(--bg);
       color: var(--text);
-      line-height: 1.7;
-      margin: 0;
-      padding: 2rem 1rem;
+      line-height: 1.8;
+      font-size: 1.125rem;
+      padding: 4rem 1.5rem;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .container {
-      max-width: 850px;
+    main {
+      max-width: 680px;
       margin: 0 auto;
-      background: var(--card-bg);
-      padding: 2.5rem;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    h1, h2 {
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      letter-spacing: -0.02em;
     }
 
     h1 {
-      font-size: 2rem;
-      color: #ffffff;
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 0.75rem;
-      margin-top: 0;
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 2.5rem;
     }
 
     h2 {
-      font-size: 1.35rem;
-      color: var(--accent);
-      margin-top: 2rem;
-      margin-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.4rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-top: 3.5rem;
+      margin-bottom: 1rem;
     }
 
     p {
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
     }
 
     strong {
-      color: #ffffff;
+      font-weight: 600;
+      color: var(--text);
     }
 
     ul {
-      margin-bottom: 1.25rem;
-      padding-left: 1.5rem;
+      margin-bottom: 1.5rem;
+      padding-left: 1.25rem;
     }
 
     li {
@@ -69,43 +92,55 @@
     }
 
     code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85em;
       background-color: var(--code-bg);
-      color: #e2e8f0;
-      padding: 0.2em 0.4em;
+      color: var(--accent);
+      padding: 0.15em 0.35em;
       border-radius: 4px;
-      font-size: 0.9em;
       border: 1px solid var(--border);
     }
 
-    /* Table Styling for Results & Signal Audit */
+    /* Minimalist Table */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin: 1.5rem 0;
-      font-size: 0.95rem;
+      margin: 2rem 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
     }
 
     th, td {
-      padding: 0.75rem 1rem;
+      padding: 0.6rem 0.5rem;
       text-align: left;
-      border: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
     th {
-      background-color: var(--code-bg);
-      color: var(--accent);
-      font-weight: 600;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
     }
 
-    tr:nth-child(even) {
-      background-color: rgba(255, 255, 255, 0.02);
+    td {
+      color: var(--text);
+    }
+
+    footer {
+      margin-top: 5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: var(--text-muted);
     }
   </style>
 </head>
 <body>
 
-<main class="container">
+<main>
 
   <h1>Refresh / Content Opportunity Scoring: Which Pages to Review First</h1>
 
@@ -194,19 +229,19 @@
         <td>avg_position</td>
         <td>16.93</td>
         <td>11.28</td>
-        <td>**-5.64** (declining pages rank *better*)</td>
+        <td><strong>-5.64</strong> (declining pages rank <em>better</em>)</td>
       </tr>
       <tr>
         <td>ctr</td>
         <td>0.002</td>
         <td>0.012</td>
-        <td>**+0.010** (declining pages have *higher* CTR)</td>
+        <td><strong>+0.010</strong> (declining pages have <em>higher</em> CTR)</td>
       </tr>
       <tr>
         <td>days_with_data</td>
         <td>29.57</td>
         <td>30.93</td>
-        <td>**+1.36** (declining pages are *more* consistently visible)</td>
+        <td><strong>+1.36</strong> (declining pages are <em>more</em> consistently visible)</td>
       </tr>
     </tbody>
   </table>
@@ -218,6 +253,10 @@
     <li>Single-month proxy label (current-window decline, not a validated future-window outcome), and stricter than the FlyRank paper's own 10%-threshold trend definition (see Methodology).</li>
     <li>The <code>clicks</code> feature sits close to the label's construction (see Results caveat above); reported lift numbers should be read with that in mind. A version of this model with <code>clicks</code> removed was tested separately and still showed a strong lift.</li>
   </ul>
+
+  <footer>
+    FlyRank ML Internship Capstone • Documentation
+  </footer>
 
 </main>
 
